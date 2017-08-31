@@ -4,9 +4,9 @@
 #include "Graph.h"
 
 #define VISUALIZE   0
-#define ADD_STARS   1
+#define ADD_NODES   1
 #define ADD_EDGES   2
-#define MOVE_STARS  3
+#define MOVE_NODES  3
 
 class ofApp : public ofBaseApp{
 

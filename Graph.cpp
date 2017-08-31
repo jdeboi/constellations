@@ -13,7 +13,6 @@ Graph::Graph() {
 }
 
 Graph::Graph(int vertexCount) {
-    nodeCurrent = -1;
 //    this->vertexCount = vertexCount;
 //    adjacencyMatrix = new bool*[vertexCount];
 //    for (int i = 0; i < vertexCount; i++) {
@@ -24,7 +23,7 @@ Graph::Graph(int vertexCount) {
     
     for (int i = 0; i < vertexCount; i++) {
         for (int j = 0; j < vertexCount; j++) {
-            adjacencyMatrix[i][j] = false;
+            removeEdge(i, j);
         }
     }
 
@@ -100,11 +99,26 @@ void Graph::display() {
         //nodes.at(i).drawEdges();
         //drawAdjacentNode(i);
     }
+    
+}
+
+// MEMORY HOG
+void Graph::drawAdjacencyMatrix() {
+    ofSetColor(255);
+    for (int i = 0; i < vertexCount; i++) {
+        for (int j = 0; j < vertexCount; j++) {
+            if (adjacencyMatrix[i][j]) {
+//                if (i >= 0 && i < nodes.size() && j >=0 && j < nodes.size()) {
+//                    ofDrawLine(nodes.at(i).getX(), nodes.at(i).getY(), nodes.at(j).getX(), nodes.at(j).getY());
+//                }
+            }
+        }
+    }
 }
 
 void Graph::drawLineToCurrent(int x, int y) {
     ofSetColor(255);
-    ofDrawLine(nodes.at(nodeCurrent).getX(), nodes.at(nodeCurrent).getY(), x, y);
+    ofDrawLine(nodes.at(currentNodeIndex).getX(), nodes.at(currentNodeIndex).getY(), x, y);
 }
 
 //void Graph::drawAdjacentNode(int nodeID) {
@@ -125,11 +139,11 @@ void Graph::drawLineToCurrent(int x, int y) {
 //}
 
 int Graph::getCurrentNode() {
-    return this->nodeCurrent;
+    return this->currentNodeIndex;
 }
 
 void Graph::setCurrentNode(int num) {
-    this->nodeCurrent = num;
+    this->currentNodeIndex = num;
 }
 
 //Graph::~Graph() {
@@ -182,51 +196,53 @@ void Graph::read() {
     
 }
 
-void Graph::addStar(int mx, int my) {
+void Graph::addNode(int mx, int my) {
     numNodes++;
     if (numNodes <= nodes.size()) {
          nodes.at(numNodes - 1).set(mx, my);
     }
 }
 
+
 void Graph::checkNodeClick(int mx, int my) {
+    currentNodeIndex = getClickedNode(mx, my);
+}
+
+int Graph::getClickedNode(int mx, int my) {
     for (int i = 0; i < nodes.size(); i++) {
         if (nodes.at(i).mouseOver(mx, my)) {
-            currentStarIndex = i;
-            return;
+            return currentNodeIndex;
         }
     }
+    return -1;
 }
 
 void Graph::checkEdgeClick(int mx, int my) {
-    for (int i = 0; i < nodes.size(); i++) {
-        if (nodes.at(i).mouseOver()) {
-            // haven't clicked on a star yet
-            if (currentNodeIndex == -1) {
-                currentNodeIndex = i;
-            }
-            // clicked on the same star
-            else if (currentNodeIndex == i) {
+    int prevNodeIndex = currentNodeIndex;
+    currentNodeIndex = getClickedNode(mx, my);
+    
+    // if we actually clicked on a star to create an edge
+    if (currentNodeIndex >= 0) {
+        // if we've already selected a star
+        if (prevNodeIndex >= 0) {
+            // oops, clicked on the same star
+            if (prevNodeIndex == currentNodeIndex) {
                 currentNodeIndex = -1;
-                // clicked a new star! let's add an edge
-            } else {
-                // add link in adjacency matrix
-                adjacencyMatrix[currentNodeIndex][i] = true;
-                currentNodeIndex = i;
             }
-            return;
+            // clicked a new star! let's add an edge
+            else {
+                // add link in adjacency matrix
+                addEdge(prevNodeIndex, currentNodeIndex);
+            }
         }
     }
-    currentNodeIndex = -1;
-    return;
-
 }
 
-bool Graph::hasCurrentStar() {
-    return (currentStarIndex > -1);
+bool Graph::hasCurrentNode() {
+    return (currentNodeIndex > -1);
 }
 
-void Graph:: moveCurrentStar(int dx, int dy) {
+void Graph:: moveCurrentNode(int dx, int dy) {
     nodes.at(currentNodeIndex).move(dx, dy);
 }
     

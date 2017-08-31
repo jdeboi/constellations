@@ -17,10 +17,11 @@ void ofApp::draw(){
     
     if (mode == ADD_EDGES) {
         if (graph.getCurrentNode() >= 0) {
+            cout << "no draw?" << std::endl;
             graph.drawLineToCurrent(mouseX, mouseY);
         }
     }
-    else if (mode == ADD_STARS) {
+    else if (mode == ADD_NODES) {
         ofSetColor(255, 0, 0);
         ofFill();
         ofDrawCircle(mouseX, mouseY, 40);
@@ -31,17 +32,17 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
     if (key == 's') graph.save();
     else if (key == 'r') graph.read();
-    else if (key == 'a') mode = ADD_STARS;
+    else if (key == 'a') mode = ADD_NODES;
     else if (key == 'e') mode = ADD_EDGES;
-    else if (key == 'm') mode = MOVE_STARS;
+    else if (key == 'm') mode = MOVE_NODES;
     else if (key == 'v') mode = VISUALIZE;
     
-    else if (mode == MOVE_STARS) {
-        if (graph.hasCurrentStar()) {
-            if (key == OF_KEY_UP) graph.moveCurrentStar(0, -1);
-            else if (key == OF_KEY_DOWN) graph.moveCurrentStar(0, 1);
-            else if (key == OF_KEY_RIGHT) graph.moveCurrentStar(1, 0);
-            else if (key == OF_KEY_LEFT) graph.moveCurrentStar(-1, 0);
+    else if (mode == MOVE_NODES) {
+        if (graph.hasCurrentNode()) {
+            if (key == OF_KEY_UP) graph.moveCurrentNode(0, -1);
+            else if (key == OF_KEY_DOWN) graph.moveCurrentNode(0, 1);
+            else if (key == OF_KEY_RIGHT) graph.moveCurrentNode(1, 0);
+            else if (key == OF_KEY_LEFT) graph.moveCurrentNode(-1, 0);
         }
     }
 }
@@ -68,10 +69,10 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    if (mode == ADD_STARS) {
-        graph.addStar(mouseX, mouseY);
+    if (mode == ADD_NODES) {
+        graph.addNode(mouseX, mouseY);
     }
-    else if (mode == MOVE_STARS) {
+    else if (mode == MOVE_NODES) {
         graph.checkNodeClick(mouseX, mouseY);
     }
     else if (mode == ADD_EDGES) {

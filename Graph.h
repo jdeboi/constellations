@@ -22,10 +22,8 @@ class Graph {
         bool adjacencyMatrix[100][100];
         int vertexCount;
         vector<Node> nodes;
-        int nodeCurrent = -1;
         int numNodes = 0;
-    int currentStarIndex = -1;
-    int currentNodeIndex = -1;
+        int currentNodeIndex = -1;
     
     public:
         // originals
@@ -45,12 +43,13 @@ class Graph {
         void drawAdjacentNode(int nodeID);
         void display();
         void drawLineToCurrent(int x, int y);
+        void drawAdjacencyMatrix();
     
         // set
         int getCurrentNode();
         void setCurrentNode(int i);
         void setAdjacentNodePointers(int nodeID);
-        void addStar(int x, int y);
+        void addNode(int x, int y);
     
         // save
         ofFile nodesFile;
@@ -59,9 +58,10 @@ class Graph {
         void read();
     
         void checkNodeClick(int x, int y);
+        int getClickedNode(int x, int y);
         void checkEdgeClick(int x, int y);
-        bool hasCurrentStar();
-        void moveCurrentStar(int dx, int dy);
+        bool hasCurrentNode();
+        void moveCurrentNode(int dx, int dy);
     
 };
 #endif /* Graph_h */
