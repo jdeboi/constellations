@@ -83,7 +83,11 @@ void Node::displayEdge(Node n) {
 }
 
 void Node::showDestinationLines() {
-   
+    //cout << adjacentNodes.size() << std::endl;
+    for (int i = 0; i < adjacentNodes.size(); i ++) {
+        Node n = *adjacentNodes.at(i);
+        ofDrawLine(x, y, n.getX(), n.getY());
+    }
 }
 
 bool Node::mouseOver() {

@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    graph = Graph(100);
+    graph = Graph();
 }
 
 //--------------------------------------------------------------
@@ -16,15 +16,13 @@ void ofApp::draw(){
    graph.display();
     
     if (mode == ADD_EDGES) {
-        if (graph.getCurrentNode() >= 0) {
-            cout << "no draw?" << std::endl;
-            graph.drawLineToCurrent(mouseX, mouseY);
-        }
+    
+        graph.drawLineToCurrent(mouseX, mouseY);
     }
     else if (mode == ADD_NODES) {
-        ofSetColor(255, 0, 0);
-        ofFill();
-        ofDrawCircle(mouseX, mouseY, 40);
+//        ofSetColor(255, 0, 0);
+//        ofFill();
+//        ofDrawCircle(mouseX, mouseY, 40);
     }
 }
 
@@ -35,7 +33,10 @@ void ofApp::keyPressed(int key){
     else if (key == 'a') mode = ADD_NODES;
     else if (key == 'e') mode = ADD_EDGES;
     else if (key == 'm') mode = MOVE_NODES;
-    else if (key == 'v') mode = VISUALIZE;
+    else if (key == 'v') {
+        mode = VISUALIZE;
+        graph.setNodePointers();
+    }
     
     else if (mode == MOVE_NODES) {
         if (graph.hasCurrentNode()) {

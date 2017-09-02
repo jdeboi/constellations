@@ -14,13 +14,14 @@
 #include <stdio.h>
 #include "ofMain.h"
 
+#define vertexCount 100
+
 
 class Graph {
 
     private:
 //        bool** adjacencyMatrix;     // pointer because you want to be able to modify the array in methods, double because
-        bool adjacencyMatrix[100][100];
-        int vertexCount;
+        bool adjacencyMatrix[vertexCount][vertexCount];
         vector<Node> nodes;
         int numNodes = 0;
         int currentNodeIndex = -1;
@@ -28,7 +29,6 @@ class Graph {
     public:
         // originals
         Graph();
-        Graph(const int vertexCount);
         void addEdge(int i, int j);
         void removeEdge(int i, int j);
         bool isEdge(int i, int j);
@@ -36,7 +36,7 @@ class Graph {
     
         // get
         vector<int> getAdjacentIDs(int nodeID);
-        //vector<Node*> getAdjacentNodePointers(int nodeID);
+        vector<Node*> getAdjacentNodePointers(int nodeID);
     
     
         // display
@@ -50,6 +50,7 @@ class Graph {
         void setCurrentNode(int i);
         void setAdjacentNodePointers(int nodeID);
         void addNode(int x, int y);
+        void setNodePointers();
     
         // save
         ofFile nodesFile;
@@ -62,6 +63,7 @@ class Graph {
         void checkEdgeClick(int x, int y);
         bool hasCurrentNode();
         void moveCurrentNode(int dx, int dy);
+    
     
 };
 #endif /* Graph_h */

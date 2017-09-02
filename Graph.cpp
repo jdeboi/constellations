@@ -10,10 +10,8 @@
 #include <stdio.h>
 
 Graph::Graph() {
-}
-
-Graph::Graph(int vertexCount) {
-//    this->vertexCount = vertexCount;
+    this->currentNodeIndex = -1;
+    this->numNodes = 0;
 //    adjacencyMatrix = new bool*[vertexCount];
 //    for (int i = 0; i < vertexCount; i++) {
 //        adjacencyMatrix[i] = new bool[vertexCount];
@@ -23,14 +21,15 @@ Graph::Graph(int vertexCount) {
     
     for (int i = 0; i < vertexCount; i++) {
         for (int j = 0; j < vertexCount; j++) {
-            removeEdge(i, j);
+            adjacencyMatrix[i][j] = false;
         }
     }
 
     for (int i = 0; i < vertexCount; i++) {
         nodes.push_back(Node(std::to_string(i), -10, -10));
     }
-    addEdge(0,0);
+    addEdge(0,1);
+    addEdge(1,3);
     addEdge(50, 50);
     //setNodeNeighbors();
 }
@@ -40,9 +39,11 @@ Graph::Graph(int vertexCount) {
 //}
 
 void Graph::addEdge(int i, int j) {
+    cout << "edge? i:" << i << " j:" << j << " vertex:" << vertexCount << std::endl;
     if (i >= 0 && i < vertexCount && j > 0 && j < vertexCount) {
         adjacencyMatrix[i][j] = true;
         adjacencyMatrix[j][i] = true;
+        cout << "edge added, i:" << i << " j:" << j << std::endl;
     }
 }
 
@@ -60,42 +61,44 @@ bool Graph::isEdge(int i, int j) {
         return false;
 }
 
-vector<int> Graph::getAdjacentIDs(int nodeID) {
-    vector<int>adjNodes;
-//    adjNodes.push_back(-1);
-    if (nodeID >= 0 && nodeID < vertexCount) {
-        for (int i = 0; i < vertexCount; i++) {
-            if (i != nodeID) {
-//                if (adjacencyMatrix[nodeID][i]) {
-//                    adjNodes.push_back(i);
-//                }
-            }
-        }
-    }
-    return adjNodes;
-}
-
-// get addresses of nodes in a vector
-// actually not sure this saves you much time b/c look up by ID is fast?
-//vector<Node*> Graph::getAdjacentNodePointers(int nodeID) {
-//    vector<Node*> adjNodes;
-//    for (int i = 0; i < vertexCount; i++) {
-//        if (i != nodeID && adjacencyMatrix[nodeID][i]) {
-//            Node *ptrNode = &nodes.at(i);
-//            adjNodes.push_back(ptrNode);
+//vector<int> Graph::getAdjacentIDs(int nodeID) {
+//    vector<int>adjNodes;
+////    adjNodes.push_back(-1);
+//    if (nodeID >= 0 && nodeID < vertexCount) {
+//        for (int i = 0; i < vertexCount; i++) {
+//            if (i != nodeID) {
+////                if (adjacencyMatrix[nodeID][i]) {
+////                    adjNodes.push_back(i);
+////                }
+//            }
 //        }
 //    }
 //    return adjNodes;
 //}
 
-//void Graph::setAdjacentNodePointers(int nodeID) {
-//    vector<Node*> adjNodes = getAdjacentNodePointers(nodeID);
-//    nodes.at(nodeID).setAdjacentNodePointers(adjNodes);
-//}
+// get addresses of nodes in a vector
+// actually not sure this saves you much time b/c look up by ID is fast?
+vector<Node*> Graph::getAdjacentNodePointers(int nodeID) {
+    vector<Node*> adjNodes;
+    for (int i = 0; i < nodes.size(); i++) {
+        if (i != nodeID && adjacencyMatrix[nodeID][i]) {
+            Node *ptrNode = &nodes.at(i);
+            adjNodes.push_back(ptrNode);
+        }
+    }
+    return adjNodes;
+}
+
+void Graph::setAdjacentNodePointers(int nodeID) {
+    vector<Node*> adjNodes = getAdjacentNodePointers(nodeID);
+    //cout <<nodeID << " " << adjNodes.size() << std::endl;
+    nodes.at(nodeID).setAdjacentNodePointers(adjNodes);
+}
 
 void Graph::display() {
     for (int i = 0; i < nodes.size(); i++) {
         nodes.at(i).display();
+        nodes.at(i).showDestinationLines();
         //nodes.at(i).drawEdges();
         //drawAdjacentNode(i);
     }
@@ -118,7 +121,9 @@ void Graph::drawAdjacencyMatrix() {
 
 void Graph::drawLineToCurrent(int x, int y) {
     ofSetColor(255);
-    ofDrawLine(nodes.at(currentNodeIndex).getX(), nodes.at(currentNodeIndex).getY(), x, y);
+    if (currentNodeIndex > -1 && currentNodeIndex < nodes.size()) {
+        ofDrawLine(nodes.at(currentNodeIndex).getX(), nodes.at(currentNodeIndex).getY(), x, y);
+    }
 }
 
 //void Graph::drawAdjacentNode(int nodeID) {
@@ -139,7 +144,8 @@ void Graph::drawLineToCurrent(int x, int y) {
 //}
 
 int Graph::getCurrentNode() {
-    return this->currentNodeIndex;
+    //cout << currentNodeIndex << std::endl;
+    return currentNodeIndex;
 }
 
 void Graph::setCurrentNode(int num) {
@@ -167,6 +173,12 @@ void Graph::save() {
             adjacencyFile << adjacencyMatrix[i][j] << " ";
         }
         adjacencyFile << std::endl;
+    }
+}
+
+void Graph::setNodePointers() {
+    for (int i = 0; i < nodes.size(); i++) {
+        setAdjacentNodePointers(i);
     }
 }
 
@@ -211,7 +223,7 @@ void Graph::checkNodeClick(int mx, int my) {
 int Graph::getClickedNode(int mx, int my) {
     for (int i = 0; i < nodes.size(); i++) {
         if (nodes.at(i).mouseOver(mx, my)) {
-            return currentNodeIndex;
+            return i;
         }
     }
     return -1;
@@ -220,7 +232,7 @@ int Graph::getClickedNode(int mx, int my) {
 void Graph::checkEdgeClick(int mx, int my) {
     int prevNodeIndex = currentNodeIndex;
     currentNodeIndex = getClickedNode(mx, my);
-    
+    //cout << currentNodeIndex << " " << prevNodeIndex << std::endl;
     // if we actually clicked on a star to create an edge
     if (currentNodeIndex >= 0) {
         // if we've already selected a star
@@ -245,5 +257,5 @@ bool Graph::hasCurrentNode() {
 void Graph:: moveCurrentNode(int dx, int dy) {
     nodes.at(currentNodeIndex).move(dx, dy);
 }
-    
-    
+
+
