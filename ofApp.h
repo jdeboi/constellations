@@ -1,7 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
-#include "Graph.h"
+//#include "Graph.h"
+#include "GraphList.h"
 
 #define VISUALIZE   0
 #define ADD_NODES   1
@@ -29,7 +30,8 @@ class ofApp : public ofBaseApp{
     
         int mode = 1;
     
-        Graph graph;
+        //Graph graph;
+        GraphList graphL;
     
     
     

@@ -26,9 +26,9 @@ Node::Node(std::string ID, int x, int y) {
 //}
 
 // problem??
-void Node::setAdjacentNodePointers(vector<Node*> adjNodePointers) {
-    adjacentNodes = adjNodePointers;
-}
+//void Node::setAdjacentNodePointers(vector<Node*> adjNodePointers) {
+//    adjacentNodes = adjNodePointers;
+//}
 
 //--------------------------------------------------------------
 // get
@@ -82,13 +82,13 @@ void Node::displayEdge(Node n) {
     
 }
 
-void Node::showDestinationLines() {
-    //cout << adjacentNodes.size() << std::endl;
-    for (int i = 0; i < adjacentNodes.size(); i ++) {
-        Node n = *adjacentNodes.at(i);
-        ofDrawLine(x, y, n.getX(), n.getY());
-    }
-}
+//void Node::showDestinationLines() {
+//    //cout << adjacentNodes.size() << std::endl;
+//    for (int i = 0; i < adjacentNodes.size(); i ++) {
+//        Node n = *adjacentNodes.at(i);
+//        ofDrawLine(x, y, n.getX(), n.getY());
+//    }
+//}
 
 bool Node::mouseOver() {
     int mx = ofGetAppPtr()->mouseX;

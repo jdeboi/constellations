@@ -26,12 +26,16 @@ class Node {
         int y;
         int diam;
         std::string ID;
-        vector<Node*> adjacentNodes;
+        //vector<Node*> adjacentNodes;
     
     public:
         // create
         Node();
         Node(std::string ID, int x, int y);
+    
+        Node* next;
+        int data;
+    
         //void addDestination(Node destination);
         void setAdjacentNodePointers(vector<Node*> adjNodePointers);
     
