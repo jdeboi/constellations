@@ -23,45 +23,36 @@
 class GraphList {
     
 private:
-    //        bool** adjacencyMatrix;     // pointer because you want to be able to modify the array in methods, double because
-//    bool adjacencyMatrix[vertexCount][vertexCount];
     vector<Node> nodes;
     int numNodes = 0;
-    
     AdjList* nodeList;
     
 public:
     Node* currentNodeIndex;
     // originals
     GraphList();
+    ~GraphList();
     void addEdge(int i, int j);
+    void addDirectedEdge(int i, int j);
+    void resetList();
 //    void removeEdge(int i, int j);
 //    bool isEdge(int i, int j);
-    //~GraphList();
-    
-    // get
-//    vector<int> getAdjacentIDs(int nodeID);
-//    vector<Node*> getAdjacentNodePointers(int nodeID);
-    
+   
     
     // display
-//    void drawAdjacentNode(int nodeID);
     void display();
     void drawLineToCurrent(int x, int y);
-//    void drawAdjacencyMatrix();
     
     // set
     Node* getCurrentNode();
     void setCurrentNode(Node* n);
-//    void setAdjacentNodePointers(int nodeID);
-//    void addNode(int x, int y);
-//    void setNodePointers();
+    void addNode(int x, int y);
     
     // save
-//    ofFile nodesFile;
-//    ofFile adjacencyFile;
-//    void save();
-//    void read();
+    ofFile nodesFile;
+    ofFile adjacencyFile;
+   void save();
+    void read();
     
     void checkNodeClick(int x, int y);
     Node* getClickedNode(int x, int y);

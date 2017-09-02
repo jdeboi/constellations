@@ -28,9 +28,9 @@ Graph::Graph() {
     for (int i = 0; i < vertexCount; i++) {
         nodes.push_back(Node(std::to_string(i), -10, -10));
     }
-    addEdge(0,1);
-    addEdge(1,3);
-    addEdge(50, 50);
+    //addEdge(0,1);
+    //addEdge(1,2);
+    //addEdge(50, 50);
     //setNodeNeighbors();
 }
 

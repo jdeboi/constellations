@@ -29,19 +29,17 @@ GraphList::GraphList() {
     for (int i = 0; i < vertexCount; i++) {
         nodes.push_back(Node(std::to_string(i), -10, -10));
     }
-    nodes.at(0).set(150, 150);
-    nodes.at(1).set(250, 100);
-    nodes.at(2).set(100, 100);
+//    nodes.at(0).set(150, 150);
+//    nodes.at(1).set(250, 100);
+//    nodes.at(2).set(100, 100);
     
-    addEdge(0,1);
-    addEdge(1,2);
-    addEdge(2, 0);
-    //setNodeNeighbors();
+    //addEdge(0,1);
+    
+    //addEdge(1,2);
+    //addEdge(1,0);
+    //addEdge(2, 0);
 }
 
-//void GraphList::setNodeNeighbors() {
-//
-//}
 
 void GraphList::addEdge(int src, int dest) {
     /*
@@ -67,59 +65,41 @@ void GraphList::addEdge(int src, int dest) {
     newNode->next = nodeList[dest].head;	// 0---->NULL (bcuz.. 1-->NULL)
     nodeList[dest].head = newNode;			// 1---->0
     
+    newNode = NULL;
+    delete newNode;
 }
 
-
-// get addresses of nodes in a vector
-// actually not sure this saves you much time b/c look up by ID is fast?
-//vector<Node*> GraphList::getAdjacentNodePointers(int nodeID) {
-//    vector<Node*> adjNodes;
-//    for (int i = 0; i < nodes.size(); i++) {
-//        if (i != nodeID && adjacencyMatrix[nodeID][i]) {
-//            Node *ptrNode = &nodes.at(i);
-//            adjNodes.push_back(ptrNode);
-//        }
-//    }
-//    return adjNodes;
-//}
-
-//void GraphList::setAdjacentNodePointers(int nodeID) {
-//    vector<Node*> adjNodes = getAdjacentNodePointers(nodeID);
-//    //cout <<nodeID << " " << adjNodes.size() << std::endl;
-//    nodes.at(nodeID).setAdjacentNodePointers(adjNodes);
-//}
-
-//void GraphList::display() {
-//    for (int i = 0; i < vertexCount; i++) {
-//        if (nodeList[i].head != NULL) {
-//        Node n = *nodeList[i].head;
-//            n.display();
-//            n.showDestinationLines();
-//        }
-//    }
-//}
+// use this for loading graph to prevent duplicates
+void GraphList::addDirectedEdge(int src, int dest) {
+    AdjListNode* newNode = new AdjListNode;  //newNode stores both data(dest) and *next pointer
+    //Node* newNode = &nodes.at(src);
+    newNode->data = dest;					//consider src = 0 and dest = 1		0<----->1 for undirected graph
+    newNode->next = NULL;		//  1----->NULL
+    //adding nodes at beginning of each list just like in linked list//
+    newNode->next = nodeList[src].head;		//*next(of dst) storing address of head->next node i.e.. 1--->2 (first node from head)
+    nodeList[src].head = newNode;				//	0-->1-->2
+}
 
 void GraphList::display(){
     int v;
     for (v = 0; v < vertexCount; ++v) {
         nodes.at(v).display();
         ofSetColor(255);
+        
+        // draw lines between nodes
         AdjListNode* tmp = nodeList[v].head;		//tmp has the address of (0,1..)vertex head
+
         int x1, y1;
-        if (tmp) {
-            Node n = nodes.at(tmp->data); // could get to the point where this call isn't necessary- just tmp->x, tmp->y (that x, y is saved 2x)
-            x1 = n.getX();
-            y1 = n.getY();
-            //ofDrawEllipse(x1, y1, 30, 30);
-        }
+        Node n = nodes.at(v); // could get to the point where this call isn't necessary- just tmp->x, tmp->y (that x, y is saved 2x)
+        x1 = n.getX();
+        y1 = n.getY();
+        
         while (tmp) {
-            tmp = tmp->next;
-            if (tmp) {
-                Node n = nodes.at(tmp->data);
-                int x2 = n.getX();
-                int y2 = n.getY();
-                ofDrawLine(x1, y1, x2, y2);
-            }
+            n = nodes.at(tmp->data);
+            int x2 = n.getX();
+            int y2 = n.getY();
+            ofDrawLine(x1, y1, x2, y2);
+           tmp = tmp->next;
         }
     }
 }
@@ -143,61 +123,40 @@ void GraphList::setCurrentNode(Node* num) {
     currentNodeIndex = num;
 }
 
-//void GraphList::save() {
-//    nodesFile.open("nodes.txt",ofFile::WriteOnly);
-//    for (int i = 0; i < nodes.size(); i++) {
-//        nodesFile << nodes.at(i).printData() << std::endl;
-//    }
-//    nodesFile.close();
-//    
-//    adjacencyFile.open("adjacency.txt",ofFile::WriteOnly);
-//    for (int i = 0; i < nodes.size(); i++) {
-//        adjacencyFile << i << " ";
-//        for (int j = 0; j < nodes.size(); j++) {
-//            adjacencyFile << adjacencyMatrix[i][j] << " ";
-//        }
-//        adjacencyFile << std::endl;
-//    }
-//}
+void GraphList::read() {
+    resetList();
+    ofBuffer buffer = ofBufferFromFile("nodes.txt");
+    int i = 0;
+    for (auto line : buffer.getLines()){
+        vector < string > result;
+        result = ofSplitString(line, " ");
+        
+        if (i >= 0 && i < nodes.size()) {
+            nodes.at(i).set(result[0], atoi(result[1].c_str()), atoi(result[2].c_str()));
+        }
+        i++;
+    }
+    
+    ofBuffer buffer2 = ofBufferFromFile("adjacencyList.txt");
+    i = 0;
+    for (auto line : buffer2.getLines()){
+        vector < string > result;
+        result = ofSplitString(line, " ");
+        if (result.size() > 1) {
+            for (int j = 1; j < result.size(); j++) {
+                addDirectedEdge(atoi(result[0].c_str()), atoi(result[j].c_str()));
+            }
+        }
+        i++;
+    }
+}
 
-//void GraphList::setNodePointers() {
-//    for (int i = 0; i < nodes.size(); i++) {
-//        setAdjacentNodePointers(i);
-//    }
-//}
-
-//void GraphList::read() {
-//    ofBuffer buffer = ofBufferFromFile("nodes.txt");
-//    int i = 0;
-//    for (auto line : buffer.getLines()){
-//        vector < string > result;
-//        result = ofSplitString(line, " ");
-//        
-//        if (i >= 0 && i < nodes.size()) {
-//            nodes.at(i).set(result[0], atoi(result[1].c_str()), atoi(result[2].c_str()));
-//        }
-//        i++;
-//    }
-//    
-//    ofBuffer buffer2 = ofBufferFromFile("adjacency.txt");
-//    i = 0;
-//    for (auto line : buffer2.getLines()){
-//        vector < string > result;
-//        result = ofSplitString(line, " ");
-//        for (int j = 1; j < result.size(); j++) {
-//            adjacencyMatrix[i][j] = atoi(result[j].c_str());
-//        }
-//        i++;
-//    }
-//    
-//}
-
-//void GraphList::addNode(int mx, int my) {
-//    numNodes++;
-//    if (numNodes <= nodes.size()) {
-//        nodes.at(numNodes - 1).set(mx, my);
-//    }
-//}
+void GraphList::addNode(int mx, int my) {
+    if (numNodes < nodes.size()) {
+        nodes.at(numNodes).set(mx, my);
+    }
+    numNodes++;
+}
 
 
 void GraphList::checkNodeClick(int mx, int my) {
@@ -205,24 +164,22 @@ void GraphList::checkNodeClick(int mx, int my) {
 }
 
 Node* GraphList::getClickedNode(int mx, int my) {
-    int v;
-    for (v = 0; v < vertexCount; ++v){
-        AdjListNode* tmp = nodeList[v].head;		//tmp has the address of (0,1..)vertex head
-        while (tmp) {
-            Node* n = &nodes.at(tmp->data);
-            if (n->mouseOver(mx, my)) {
-                return n;
-            }
-            tmp = tmp->next;
+    for (int i = 0; i < nodes.size(); i++) {
+        if (nodes.at(i).mouseOver(mx, my)) {
+            return &nodes.at(i);
         }
     }
     return NULL;
+    
 }
 
 void GraphList::checkEdgeClick(int mx, int my) {
     Node* prevNodeIndex = currentNodeIndex;
     currentNodeIndex = getClickedNode(mx, my);
-    //cout << currentNodeIndex << " " << prevNodeIndex << std::endl;
+    
+    if (currentNodeIndex != NULL) {
+        cout << currentNodeIndex->data << " " << prevNodeIndex << std::endl;
+    }
     // if we actually clicked on a star to create an edge
     if (currentNodeIndex) {
         // if we've already selected a star
@@ -252,13 +209,49 @@ void GraphList::printGraph(){
     int v;
     for (v = 0; v < vertexCount; ++v){
         AdjListNode* tmp = nodeList[v].head;		//tmp has the address of (0,1..)vertex head
-        //cout<<"\n Adjacency list of vertex "<<v<<"\n head ";
+        cout<<"\n Adjacency list of vertex "<<v<<"\n head ";
         while (tmp)
         {
-            //cout<<"-> "<<tmp->data;
+            cout<<"-> "<<tmp->data;
             tmp = tmp->next;
         }
-        //cout<<endl;
+        cout<<endl;
     }
 }
+
+void GraphList::save(){
+    nodesFile.open("nodes.txt",ofFile::WriteOnly);
+    for (int i = 0; i < nodes.size(); i++) {
+        nodesFile << nodes.at(i).printData() << std::endl;
+    }
+    nodesFile.close();
+
+    int v;
+    adjacencyFile.open("adjacencyList.txt",ofFile::WriteOnly);
+    for (v = 0; v < vertexCount; ++v){
+        AdjListNode* tmp = nodeList[v].head;		//tmp has the address of (0,1..)vertex head
+        adjacencyFile <<"\n" << v;
+        while (tmp) {
+            adjacencyFile <<" "<< tmp->data;
+            tmp = tmp->next;
+        }
+    }
+    adjacencyFile.close();
+}
+
+void GraphList::resetList() {
+    nodeList = NULL;
+    delete nodeList;
+    nodeList = new AdjList [vertexCount];
+    for (int i = 0; i < vertexCount; ++i) {
+        nodeList[i].head = NULL;  		//linking head of all vertices (array) to NULL ,it doesn't store any number only stores HEAD
+    }
+    
+}
+GraphList::~GraphList() {
+    nodeList = NULL;
+    delete nodeList;
+}
+
+
 

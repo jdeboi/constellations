@@ -61,7 +61,9 @@ void Node::display() {
         ofSetColor(255, 255, 0);
     }
     ofFill();
+    ofSetColor(0, 0, 255);
     ofDrawCircle(x, y, diam);
+    ofDrawBitmapString(ID, x, y-15);
     
 //    if (mode != VISUALIZE) {
 //        ofSetColor(0, 255, 0);
