@@ -55,14 +55,13 @@ int Node::getY() {
 //--------------------------------------------------------------
 // display
 void Node::display() {
+    ofSetColor(255);
     if (mouseOver()) {
         ofSetColor(255, 0, 0);
-    } else {
-        ofSetColor(255, 255, 0);
     }
     ofFill();
-    ofSetColor(0, 0, 255);
-    ofDrawCircle(x, y, diam);
+    ofSetLineWidth(2);
+    ofDrawCircle(x, y, 5);
     ofDrawBitmapString(ID, x, y-15);
     
 //    if (mode != VISUALIZE) {

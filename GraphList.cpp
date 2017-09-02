@@ -82,7 +82,7 @@ void GraphList::addDirectedEdge(int src, int dest) {
 
 void GraphList::display(){
     int v;
-    for (v = 0; v < vertexCount; ++v) {
+    for (v = 0; v < numNodes; ++v) {
         nodes.at(v).display();
         ofSetColor(255);
         
@@ -105,39 +105,41 @@ void GraphList::display(){
 }
 
 
-void GraphList::drawLineToCurrent(int x, int y) {
-    ofSetColor(255);
-    if(currentNodeIndex) {
-        ofDrawLine(currentNodeIndex->getX(), currentNodeIndex->getY(), x, y);
-    }
-}
-
-
-
-Node* GraphList::getCurrentNode() {
-    //cout << currentNodeIndex << std::endl;
-    return currentNodeIndex;
-}
-
-void GraphList::setCurrentNode(Node* num) {
-    currentNodeIndex = num;
-}
+//void GraphList::drawLineToCurrent(int x, int y) {
+//    ofSetColor(255);
+//    if(currentNodeIndex) {
+//        ofDrawLine(currentNodeIndex->getX(), currentNodeIndex->getY(), x, y);
+//    }
+//}
+//
+//Node* GraphList::getCurrentNode() {
+//    //cout << currentNodeIndex << std::endl;
+//    return currentNodeIndex;
+//}
+//void GraphList::setCurrentNode(Node* num) {
+//    currentNodeIndex = num;
+//}
 
 void GraphList::read() {
     resetList();
-    ofBuffer buffer = ofBufferFromFile("nodes.txt");
-    int i = 0;
+    ofBuffer buffer = ofBufferFromFile("nodesGrid.txt");
+    int i = -1;
     for (auto line : buffer.getLines()){
-        vector < string > result;
-        result = ofSplitString(line, " ");
-        
-        if (i >= 0 && i < nodes.size()) {
-            nodes.at(i).set(result[0], atoi(result[1].c_str()), atoi(result[2].c_str()));
+        if (i == -1) numNodes = atoi(line.c_str());
+        else {
+            vector < string > result;
+            
+            cout << numNodes << endl;
+            result = ofSplitString(line, " ");
+            
+            if (i >= 0 && i < nodes.size()) {
+                nodes.at(i).set(result[0], atoi(result[1].c_str()), atoi(result[2].c_str()));
+            }
         }
         i++;
     }
     
-    ofBuffer buffer2 = ofBufferFromFile("adjacencyList.txt");
+    ofBuffer buffer2 = ofBufferFromFile("adjacencyListGrid.txt");
     i = 0;
     for (auto line : buffer2.getLines()){
         vector < string > result;
@@ -159,51 +161,89 @@ void GraphList::addNode(int mx, int my) {
 }
 
 
-void GraphList::checkNodeClick(int mx, int my) {
-    currentNodeIndex = getClickedNode(mx, my);
-}
-
-Node* GraphList::getClickedNode(int mx, int my) {
-    for (int i = 0; i < nodes.size(); i++) {
-        if (nodes.at(i).mouseOver(mx, my)) {
-            return &nodes.at(i);
-        }
-    }
-    return NULL;
-    
-}
-
-void GraphList::checkEdgeClick(int mx, int my) {
-    Node* prevNodeIndex = currentNodeIndex;
-    currentNodeIndex = getClickedNode(mx, my);
-    
-    if (currentNodeIndex != NULL) {
-        cout << currentNodeIndex->data << " " << prevNodeIndex << std::endl;
-    }
-    // if we actually clicked on a star to create an edge
-    if (currentNodeIndex) {
-        // if we've already selected a star
-        if (prevNodeIndex) {
-            // oops, clicked on the same star
-            if (prevNodeIndex == currentNodeIndex) {
-                currentNodeIndex = NULL;
-            }
-            // clicked a new star! let's add an edge
-            else {
-                // add link in list
-                addEdge(prevNodeIndex->data, currentNodeIndex->data);
-            }
-        }
-    }
-}
-
 bool GraphList::hasCurrentNode() {
-    return (currentNodeIndex);
+    return (currentNodeIndex > -1);
 }
 
 void GraphList:: moveCurrentNode(int dx, int dy) {
-    currentNodeIndex->move(dx, dy);
+    nodes.at(currentNodeIndex).move(dx, dy);
 }
+
+int GraphList::getClickedNode(int mx, int my) {
+    for (int i = 0; i < nodes.size(); i++) {
+        if (nodes.at(i).mouseOver(mx, my)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void GraphList::checkEdgeClick(int mx, int my) {
+    int prevNodeIndex = currentNodeIndex;
+    currentNodeIndex = getClickedNode(mx, my);
+    //cout << currentNodeIndex << " " << prevNodeIndex << std::endl;
+    // if we actually clicked on a star to create an edge
+    if (currentNodeIndex >= 0) {
+        // if we've already selected a star
+        if (prevNodeIndex >= 0) {
+            // oops, clicked on the same star
+            if (prevNodeIndex == currentNodeIndex) {
+                currentNodeIndex = -1;
+            }
+            // clicked a new star! let's add an edge
+            else {
+                // add link in adjacency matrix
+                addEdge(prevNodeIndex, currentNodeIndex);
+            }
+        }
+    }
+}
+
+
+void GraphList::checkNodeClick(int mx, int my) {
+    currentNodeIndex = getClickedNode(mx, my);
+}
+//
+//Node* GraphList::getClickedNode(int mx, int my) {
+//    for (int i = 0; i < nodes.size(); i++) {
+//        if (nodes.at(i).mouseOver(mx, my)) {
+//            return &nodes.at(i);
+//        }
+//    }
+//    return NULL;
+//    
+//}
+//
+//void GraphList::checkEdgeClick(int mx, int my) {
+//    Node* prevNodeIndex = currentNodeIndex;
+//    currentNodeIndex = getClickedNode(mx, my);
+//    
+//    if (currentNodeIndex != NULL) {
+//        cout << currentNodeIndex->data << " " << prevNodeIndex << std::endl;
+//    }
+//    // if we actually clicked on a star to create an edge
+//    if (currentNodeIndex) {
+//        // if we've already selected a star
+//        if (prevNodeIndex) {
+//            // oops, clicked on the same star
+//            if (prevNodeIndex == currentNodeIndex) {
+//                currentNodeIndex = NULL;
+//            }
+//            // clicked a new star! let's add an edge
+//            else {
+//                // add link in list
+//                addEdge(prevNodeIndex->data, currentNodeIndex->data);
+//            }
+//        }
+//    }
+//}
+//bool GraphList::hasCurrentNode() {
+//    return (currentNodeIndex);
+//}
+//
+//void GraphList:: moveCurrentNode(int dx, int dy) {
+//    currentNodeIndex->move(dx, dy);
+//}
 
 void GraphList::printGraph(){
     int v;
@@ -221,6 +261,7 @@ void GraphList::printGraph(){
 
 void GraphList::save(){
     nodesFile.open("nodes.txt",ofFile::WriteOnly);
+    nodesFile << numNodes << endl;
     for (int i = 0; i < nodes.size(); i++) {
         nodesFile << nodes.at(i).printData() << std::endl;
     }
@@ -239,6 +280,23 @@ void GraphList::save(){
     adjacencyFile.close();
 }
 
+
+int GraphList::getCurrentNode() {
+    //cout << currentNodeIndex << std::endl;
+    return currentNodeIndex;
+}
+
+void GraphList::setCurrentNode(int num) {
+    this->currentNodeIndex = num;
+}
+
+void GraphList::drawLineToCurrent(int x, int y) {
+    ofSetColor(255);
+    if (currentNodeIndex > -1 && currentNodeIndex < nodes.size()) {
+        ofDrawLine(nodes.at(currentNodeIndex).getX(), nodes.at(currentNodeIndex).getY(), x, y);
+    }
+}
+
 void GraphList::resetList() {
     nodeList = NULL;
     delete nodeList;
@@ -248,10 +306,9 @@ void GraphList::resetList() {
     }
     
 }
+
 GraphList::~GraphList() {
     nodeList = NULL;
     delete nodeList;
 }
-
-
 

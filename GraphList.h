@@ -28,7 +28,7 @@ private:
     AdjList* nodeList;
     
 public:
-    Node* currentNodeIndex;
+    int currentNodeIndex;
     // originals
     GraphList();
     ~GraphList();
@@ -44,8 +44,8 @@ public:
     void drawLineToCurrent(int x, int y);
     
     // set
-    Node* getCurrentNode();
-    void setCurrentNode(Node* n);
+    int getCurrentNode();
+    void setCurrentNode(int n);
     void addNode(int x, int y);
     
     // save
@@ -55,7 +55,7 @@ public:
     void read();
     
     void checkNodeClick(int x, int y);
-    Node* getClickedNode(int x, int y);
+    int getClickedNode(int x, int y);
     void checkEdgeClick(int x, int y);
     bool hasCurrentNode();
     void moveCurrentNode(int dx, int dy);
