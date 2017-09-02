@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include "ofMath.h"
 #include "ofGraphics.h"
+#include "AdjStruct.h"
 
 class Node {
 
@@ -52,7 +53,7 @@ class Node {
         void showDestinationLines();
         bool mouseOver();
         bool mouseOver(int x, int y);
-        void drawNeighbors();
+        //void displayNeighbors(AdjListNode* tmp);
     
         // update
         void set(std::string, int x, int y);

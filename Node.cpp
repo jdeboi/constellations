@@ -58,7 +58,7 @@ void Node::display() {
     if (mouseOver()) {
         ofSetColor(255, 0, 0);
     } else {
-        ofSetColor(255);
+        ofSetColor(255, 255, 0);
     }
     ofFill();
     ofDrawCircle(x, y, diam);
@@ -74,9 +74,24 @@ void Node::display() {
 
 }
 
-void Node::drawNeighbors() {
-    
-}
+//void Node::displayNeighbors(AdjListNode* tmp) {
+//    int x1 = this->getX();
+//    int y1 = this->getY();
+//
+//    while (tmp) {
+//        tmp = tmp->next;
+//        if (tmp) {
+//            
+//            // Not gonna work b/c can't get access to other nodes referenced
+//                // so question is - add x, y to nodeList?
+//            Node n = nodes.at(tmp->data);
+//            int x2 = n.getX();
+//            int y2 = n.getY();
+//            ofDrawLine(x1, y1, x2, y2);
+//        }
+//    }
+//
+//}
 
 void Node::displayEdge(Node n) {
     

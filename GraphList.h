@@ -13,17 +13,12 @@
 #include "Node.h"
 #include <stdio.h>
 #include "ofMain.h"
+#include "AdjStruct.h"
 
 #define vertexCount 100
 
 
-/*
- * Adjacency List
- */
-struct AdjList
-{
-    Node* head;
-};
+
 
 class GraphList {
     

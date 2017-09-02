@@ -27,11 +27,15 @@ GraphList::GraphList() {
         nodeList[i].head = NULL;  		//linking head of all vertices (array) to NULL ,it doesn't store any number only stores HEAD
     }
     for (int i = 0; i < vertexCount; i++) {
-        nodes.push_back(Node(std::to_string(i), rand() % 400,rand() % 400));
+        nodes.push_back(Node(std::to_string(i), -10, -10));
     }
-//    addEdge(0,1);
-//    addEdge(1,3);
-//    addEdge(50, 50);
+    nodes.at(0).set(150, 150);
+    nodes.at(1).set(250, 100);
+    nodes.at(2).set(100, 100);
+    
+    addEdge(0,1);
+    addEdge(1,2);
+    addEdge(2, 0);
     //setNodeNeighbors();
 }
 
@@ -46,7 +50,7 @@ void GraphList::addEdge(int src, int dest) {
      */
 
     
-    Node* newNode = new Node;  //newNode stores both data(dest) and *next pointer
+    AdjListNode* newNode = new AdjListNode;  //newNode stores both data(dest) and *next pointer
     //Node* newNode = &nodes.at(src);
     newNode->data = dest;					//consider src = 0 and dest = 1		0<----->1 for undirected graph
     newNode->next = NULL;		//  1----->NULL
@@ -56,7 +60,7 @@ void GraphList::addEdge(int src, int dest) {
     
     // Since graph is undirected, add an edge from dest to src also
     //Node* destNode = &nodes.at(dest); 				 //now newNode storing data(src)
-    newNode = new Node;
+    newNode = new AdjListNode;
     newNode->data = src;
     newNode->next = NULL;				// 0--->NULL
     
@@ -96,23 +100,25 @@ void GraphList::addEdge(int src, int dest) {
 //}
 
 void GraphList::display(){
-    ofSetColor(255);
     int v;
     for (v = 0; v < vertexCount; ++v) {
-        Node* tmp = nodeList[v].head;		//tmp has the address of (0,1..)vertex head
+        nodes.at(v).display();
+        ofSetColor(255);
+        AdjListNode* tmp = nodeList[v].head;		//tmp has the address of (0,1..)vertex head
         int x1, y1;
         if (tmp) {
-            x1 = tmp->getX();
-            y1 = tmp->getY();
+            Node n = nodes.at(tmp->data); // could get to the point where this call isn't necessary- just tmp->x, tmp->y (that x, y is saved 2x)
+            x1 = n.getX();
+            y1 = n.getY();
             //ofDrawEllipse(x1, y1, 30, 30);
         }
         while (tmp) {
-            tmp->display();
             tmp = tmp->next;
             if (tmp) {
-                int x2 = tmp->getX();
-                int y2 = tmp->getY();
-                ofDrawLine(x1, y2, x2, y2);
+                Node n = nodes.at(tmp->data);
+                int x2 = n.getX();
+                int y2 = n.getY();
+                ofDrawLine(x1, y1, x2, y2);
             }
         }
     }
@@ -201,10 +207,11 @@ void GraphList::checkNodeClick(int mx, int my) {
 Node* GraphList::getClickedNode(int mx, int my) {
     int v;
     for (v = 0; v < vertexCount; ++v){
-        Node* tmp = nodeList[v].head;		//tmp has the address of (0,1..)vertex head
+        AdjListNode* tmp = nodeList[v].head;		//tmp has the address of (0,1..)vertex head
         while (tmp) {
-            if (tmp->mouseOver(mx, my)) {
-                return tmp;
+            Node* n = &nodes.at(tmp->data);
+            if (n->mouseOver(mx, my)) {
+                return n;
             }
             tmp = tmp->next;
         }
@@ -244,7 +251,7 @@ void GraphList:: moveCurrentNode(int dx, int dy) {
 void GraphList::printGraph(){
     int v;
     for (v = 0; v < vertexCount; ++v){
-        Node* tmp = nodeList[v].head;		//tmp has the address of (0,1..)vertex head
+        AdjListNode* tmp = nodeList[v].head;		//tmp has the address of (0,1..)vertex head
         //cout<<"\n Adjacency list of vertex "<<v<<"\n head ";
         while (tmp)
         {
